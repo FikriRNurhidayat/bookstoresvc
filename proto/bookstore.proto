@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package bookstore;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/fikrirnurhidayat/bookstoresvc/proto;bookstore";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Bookstore Service";
+    version: "1.0";
+    contact: {
+      name: "Fikri Rahmat Nurhidayat";
+      url: "https://github.com/fikrirnurhidayat";
+      email: "fikrirnurhidayat@gmail.com";
+    };
+  };
+};
+
+service BookstoreService {
+  rpc GetBooks(PageRequest) returns (BooksResponse) {
+    option (google.api.http) = {
+      get : "/v1/books"
+    };
+  }
+}
+
+message BooksResponse {
+  MetaResponse meta = 1;
+  repeated Book data = 2;
+}
+
+// Models
+message PageRequest {
+  uint32 page = 1;
+  uint32 page_size = 2;
+}
+
+message MetaResponse {
+  uint32 page = 1;
+  uint32 page_size = 2;
+  uint32 page_count = 3;
+  uint32 total =  4;
+}
+
+message Book {
+  uint64 id = 1;
+  string title = 2;
+  string synopsis = 3;
+  string isbn = 4;
+  uint64 page_count = 5;
+  CoverType cover_type = 6;
+  string cover_image_url = 7;
+  string author_id = 8;
+  string author_name = 9;
+  string publisher_id = 10;
+  string publisher_name = 11;
+  string published_at = 12;
+}
+
+message Author {
+  uint64 id = 1;
+  string name = 2;
+  string bio = 3;
+  string image_url = 4;
+}
+
+message Publisher {
+  uint64 id = 1;
+  string name = 2;
+  string image_url = 3;
+}
+
+enum CoverType {
+  PAPERBACK = 0;
+  HARDCOVER = 1;
+}
