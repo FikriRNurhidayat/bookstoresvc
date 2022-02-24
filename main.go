@@ -12,14 +12,14 @@ import (
 	"google.golang.org/grpc/grpclog"
   "google.golang.org/grpc"
   "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-  proto "github.com/fikrirnurhidayat/bookstoresvc/gen"
-  handlers "github.com/fikrirnurhidayat/bookstoresvc/app/handlers"
+  proto "github.com/fikrirnurhidayat/bookstoresvc/proto"
+  "github.com/fikrirnurhidayat/bookstoresvc/app/server"
 )
 
 // Grab configuration from cli
 var (
-	gRPCPort    = flag.Int("grpc-port", 10000, "The gRPC server port")
-	gatewayPort = flag.Int("gateway-port", 11000, "The gRPC-Gateway server port")
+	gRPCPort    = flag.Int("grpc-port", 8081, "The gRPC server port")
+	gatewayPort = flag.Int("gateway-port", 8080, "The gRPC-Gateway server port")
 )
 
 var log grpclog.LoggerV2
@@ -53,7 +53,7 @@ func serveRPC(s grpc.Server, grpcAddr string) error {
     log.Fatalf("[tcp] Failed to listen at tcp://%s", grpcAddr)
   }
 
-  log.Info("[grpc] Server is running at http://")
+  log.Infof("[grpc] Server is running at http://%s", grpcAddr)
   s.Serve(tcpListener)
   return nil
 }
@@ -68,7 +68,7 @@ func main() {
   mux := runtime.NewServeMux()
   s := grpc.NewServer();
 
-  proto.RegisterBookstoreServiceServer(s, handlers.NewServer())
+  proto.RegisterBookstoreServiceServer(s, server.NewServer())
 
   go serveRPC(*s, addr)
   serveHTTP(gatewayAddr, addr, mux)

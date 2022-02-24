@@ -3,6 +3,7 @@ syntax = "proto3";
 package bookstore;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/fikrirnurhidayat/bookstoresvc/proto;bookstore";
@@ -24,56 +25,141 @@ service BookstoreService {
     option (google.api.http) = {
       get : "/v1/books"
     };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Book List"
+      description: "Get books list on page."
+      tags: "Book"
+    };
+  }
+
+  rpc GetBook(GetBookRequest) returns (BookResponse) {
+    option (google.api.http) = {
+      get : "/v1/books/{id}"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Book Detail"
+      description: "Get book detail by id."
+      tags: "Book"
+    };
+  }
+
+  rpc GetAuthors(PageRequest) returns (AuthorsResponse) {
+    option (google.api.http) = {
+      get : "/v1/authors"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Author List"
+      description: "Get authors list on page."
+      tags: "Author"
+    };
+  }
+
+  rpc GetAuthor(GetAuthorRequest) returns (AuthorResponse) {
+    option (google.api.http) = {
+      get : "/v1/authors/{id}"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Author Detail"
+      description: "Get author detail by id."
+      tags: "Author"
+    };
   }
 }
 
-message BooksResponse {
-  MetaResponse meta = 1;
-  repeated Book data = 2;
-}
-
-// Models
+// Request messages
 message PageRequest {
   uint32 page = 1;
   uint32 page_size = 2;
 }
 
-message MetaResponse {
+message GetAuthorRequest {
+  uint32 id = 1;
+}
+
+message GetBookRequest {
+  uint32 id = 1;
+}
+
+// Responses messages
+message BooksResponse {
+  Status status = 1;
+  Meta meta = 2;
+  repeated Book data = 3;
+}
+
+message BookResponse {
+  Status status = 1;
+  Book data = 2;
+}
+
+message AuthorsResponse {
+  Meta meta = 1;
+  repeated Author data = 2;
+}
+
+message AuthorResponse {
+  Meta meta = 1;
+  Author data = 2;
+}
+
+message PublishersResponse {
+  Meta meta = 1;
+  repeated Publisher data = 2;
+}
+
+message PublisherResponse {
+  Meta meta = 1;
+  Publisher data = 2;
+}
+
+// Data message
+message Book {
+  uint32 id = 1;
+  string title = 2;
+  string synopsis = 3;
+  string isbn = 4;
+  uint32 page_count = 5;
+  CoverType cover_type = 6;
+  string cover_image_url = 7;
+  uint32 author_id = 8;
+  string author_name = 9;
+  uint32 publisher_id = 10;
+  string publisher_name = 11;
+  google.protobuf.Timestamp published_at = 12;
+}
+
+message Author {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message Publisher {
+  uint32 id = 1;
+  string name = 2;
+}
+
+message Meta {
+  Pagination pagination = 1;
+}
+
+message Pagination {
   uint32 page = 1;
   uint32 page_size = 2;
   uint32 page_count = 3;
   uint32 total =  4;
 }
 
-message Book {
-  uint64 id = 1;
-  string title = 2;
-  string synopsis = 3;
-  string isbn = 4;
-  uint64 page_count = 5;
-  CoverType cover_type = 6;
-  string cover_image_url = 7;
-  string author_id = 8;
-  string author_name = 9;
-  string publisher_id = 10;
-  string publisher_name = 11;
-  string published_at = 12;
-}
-
-message Author {
-  uint64 id = 1;
-  string name = 2;
-  string bio = 3;
-  string image_url = 4;
-}
-
-message Publisher {
-  uint64 id = 1;
-  string name = 2;
-  string image_url = 3;
-}
-
 enum CoverType {
   PAPERBACK = 0;
   HARDCOVER = 1;
+}
+
+enum Status {
+  OK = 0;
+  FAIL = 1;
+  ERROR = 2;
 }
