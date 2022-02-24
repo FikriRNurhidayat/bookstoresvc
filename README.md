@@ -5,6 +5,7 @@ This repository contains basic implementation of GRPC-Gateway on Golang.
 # Dependency
 
 This repository requires this following softwares to work:
+- Buf
 - PostgreSQL
 - Go
 - Docker
